@@ -1,0 +1,89 @@
+<DATAFILE>
+
+[FILEINFO]
+file={path='../../../data/Funytoin_data.csv'}
+delimiter = comma
+header={ID, TIME, DV, AMT, ADM, WT, SEX}
+
+[CONTENT]
+ID = {use=identifier}
+TIME = {use=time}
+DV = {use=observation, type=continuous}
+AMT = {use=amount}
+ADM = {use=administration}
+WT = {use=covariate, type=continuous}
+SEX = {use=covariate, type=categorical}
+
+<MODEL>
+
+[COVARIATE]
+input = {WT, SEX}
+
+SEX = {type=categorical, categories={'0', '1'}}
+
+EQUATION:
+logtWT = log(WT/65.7357)
+
+[INDIVIDUAL]
+input = {F_pop, omega_F, Tk0_pop, omega_Tk0, V_pop, omega_V, k_pop, omega_k, corr_Tk0_F, corr_V_F, corr_V_Tk0, corr_k_F, corr_k_Tk0, corr_k_V, SEX, beta_F_SEX_1, WT, beta_F_WT, beta_Tk0_WT, beta_V_WT, logtWT, beta_Tk0_logtWT}
+
+SEX = {type=categorical, categories={'0', '1'}}
+
+DEFINITION:
+F = {distribution=logitNormal, typical=F_pop, covariate={SEX, WT}, coefficient={{0, beta_F_SEX_1}, beta_F_WT}, sd=omega_F}
+Tk0 = {distribution=logNormal, typical=Tk0_pop, covariate={WT, logtWT}, coefficient={beta_Tk0_WT, beta_Tk0_logtWT}, sd=omega_Tk0}
+V = {distribution=logNormal, typical=V_pop, covariate=WT, coefficient=beta_V_WT, sd=omega_V}
+k = {distribution=logNormal, typical=k_pop, sd=omega_k}
+correlation = {level=id, r(Tk0, F)=corr_Tk0_F, r(V, F)=corr_V_F, r(k, F)=corr_k_F, r(V, Tk0)=corr_V_Tk0, r(k, Tk0)=corr_k_Tk0, r(k, V)=corr_k_V}
+
+[LONGITUDINAL]
+input = {b}
+
+file = '../../model_V1.txt'
+
+DEFINITION:
+DV = {distribution=normal, prediction=Cc, errorModel=proportional(b)}
+
+<FIT>
+data = 'DV'
+model = DV
+
+<PARAMETER>
+F_pop = {value=0.9247935583295384, method=MLE}
+Tk0_pop = {value=661.3091470319924, method=MLE}
+V_pop = {value=28.40878882044031, method=MLE}
+b = {value=0.1261760377350637, method=MLE}
+beta_F_SEX_1 = {value=0.2069445336866347, method=MLE}
+beta_F_WT = {value=-0.0287392417365001, method=MLE}
+beta_Tk0_WT = {value=-0.0803156117229635, method=MLE}
+beta_Tk0_logtWT = {value=6.494581907426113, method=MLE}
+beta_V_WT = {value=0.0125173059164674, method=MLE}
+c = {value=1, method=FIXED}
+corr_Tk0_F = {value=0.429554903553982, method=MLE}
+corr_V_F = {value=-0.2021041614008774, method=MLE}
+corr_V_Tk0 = {value=0.5145681611523523, method=MLE}
+corr_k_F = {value=0.7989471584170951, method=MLE}
+corr_k_Tk0 = {value=0.6876490176443117, method=MLE}
+corr_k_V = {value=0.0621330132911768, method=MLE}
+k_pop = {value=0.0959803024220654, method=MLE}
+omega_F = {value=1, method=MLE}
+omega_Tk0 = {value=1, method=MLE}
+omega_V = {value=1, method=MLE}
+omega_k = {value=1, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(run = false,method = StochasticApproximation)
+logLikelihood(run = false,method = ImportanceSampling)
+
+[PLOTS]
+run = true
+plots = {indfits = {selected = true}, parameterdistribution = {selected = true}, obspred = {selected = true}, covariancemodeldiagnosis = {selected = true}, covariatemodeldiagnosis = {selected = true}, vpc = {selected = true}, residualsscatter = {selected = true}, residualsdistribution = {selected = true}, randomeffects = {selected = true}, saemresults = {selected = true}}
+
+[SETTINGS]
+GLOBAL:
+exportpath = '../../'
+

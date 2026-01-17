@@ -1,0 +1,18 @@
+DESCRIPTION:
+The administration can be either IV or extravascular with a zero order process (duration Tk0, bioavailability F).
+IV doses (bolus/infusion) must be tagged with ADMINISTRATION ID=1 in the data set and extravascular doses with ADMINISTRATION ID=2.
+IV doses can be via a bolus or an infusion (if INFUSION RATE or INFUSION DURATION column present in the data set).
+The PK model has one compartment (volume V) and a linear elimination (elimination rate k).
+
+[LONGITUDINAL]
+input = {F, Tk0, V, k}
+
+PK:
+; PK model definition
+compartment(cmt = 1, volume = V, concentration = Cc)
+iv(adm = 2, cmt = 1)
+oral(adm = 1, cmt = 1, Tk0, p = F)
+elimination(cmt = 1, k)
+
+OUTPUT:
+output = {Cc}
