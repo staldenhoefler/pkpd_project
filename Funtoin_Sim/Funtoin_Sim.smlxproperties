@@ -1,0 +1,5 @@
+[STRATIFY]
+outputplot%3AAUC%3A0\split=__GROUP__
+outputplot%3ACc%3A0\split=__GROUP__
+predictiondistribution%3AAUC%3A0\split=__GROUP__
+predictiondistribution%3ACc%3A0\split=__GROUP__

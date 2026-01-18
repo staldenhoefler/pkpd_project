@@ -1,0 +1,21 @@
+[LONGITUDINAL]
+input = {F, ka, V, Cl}
+
+PK:
+compartment(cmt = 1, volume = V, concentration = Cc)
+
+; IV doses (example)
+iv(adm = 2, cmt = 1)
+
+; Extravascular doses (example)
+oral(adm = 1, cmt = 1, ka, p = F)
+
+elimination(cmt = 1, Cl)
+
+EQUATION:
+odeType = stiff
+ddt_AUC = Cc
+
+OUTPUT:
+output = {Cc}
+table  = {AUC}

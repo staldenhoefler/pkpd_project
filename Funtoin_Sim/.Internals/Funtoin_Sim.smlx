@@ -1,0 +1,116 @@
+<DATAFILE>
+
+[FILEINFO]
+file={path='../DataFile/Funytoin_data.csv'}
+delimiter = comma
+header={ID, TIME, DV, AMT, ADM, WT, SEX}
+
+[CONTENT]
+ID = {use=identifier}
+TIME = {use=time}
+DV = {use=observation, type=continuous}
+AMT = {use=amount}
+ADM = {use=administration}
+WT = {use=covariate, type=continuous}
+SEX = {use=covariate, type=categorical}
+
+[FILTER]
+data_DV = {origin='../DataFile/Funytoin_data.csv'}
+
+<MODEL>
+
+[COVARIATE]
+input = {WT, SEX}
+
+SEX = {type=categorical, categories={'0', '1'}}
+
+EQUATION:
+logtWT = log(WT/70)
+
+[INDIVIDUAL]
+input = {F_pop, omega_F, V_pop, omega_V, Cl_pop, omega_Cl, ka_pop, omega_ka, logtWT, corr_ka_V, corr_V_Cl, corr_ka_Cl, corr_F_Cl, corr_V_F, corr_ka_F, SEX, beta_ka_SEX_1, WT, beta_Cl_WT, beta_V_logtWT}
+
+SEX = {type=categorical, categories={'0', '1'}}
+
+DEFINITION:
+F = {distribution=logitNormal, typical=F_pop, sd=omega_F}
+V = {distribution=logNormal, typical=V_pop, covariate=logtWT, coefficient=beta_V_logtWT, sd=omega_V}
+Cl = {distribution=logNormal, typical=Cl_pop, covariate=WT, coefficient=beta_Cl_WT, sd=omega_Cl}
+ka = {distribution=logNormal, typical=ka_pop, covariate=SEX, coefficient={0, beta_ka_SEX_1}, sd=omega_ka}
+correlation = {level=id, r(F, Cl)=corr_F_Cl, r(V, Cl)=corr_V_Cl, r(ka, Cl)=corr_ka_Cl, r(V, F)=corr_V_F, r(ka, F)=corr_ka_F, r(ka, V)=corr_ka_V}
+
+[LONGITUDINAL]
+input = {a, b}
+
+file = '../ModelFile/model_V1.txt'
+
+DEFINITION:
+DV = {distribution=normal, prediction=Cc, errorModel=combined1(a, b)}
+
+<SIMULX>
+
+[SETTINGS]
+GLOBAL:
+exportpath='../'
+userFilesNextToProject=true
+
+[DEFINITION]
+OCCASION:
+file={path='../ExternalFiles/mlx_subjects.txt'}
+
+POPULATION:
+parameters={F_pop, ka_pop, beta_ka_SEX_1, V_pop, beta_V_logtWT, Cl_pop, beta_Cl_WT, corr_F_Cl, corr_V_Cl, corr_V_F, corr_ka_Cl, corr_ka_F, corr_ka_V, omega_Cl, omega_F, omega_V, omega_ka, a, b}
+'mlx_Pop' = {{{values={0.7044233533422061, 0.5613749330460012, -0.2760804241268232, 70.07217559901146, 1.161943618640849, 2.241912809739945, 0.016144393433234, 0.4596775387596277, 0.7042922026080537, 0.4424686684517937, -0.8567687345190336, -0.2439859178366851, -0.7632338089215353, 0.3192998589026997, 0.5955954896856032, 0.1620461660349817, 0.2462380963609784, 0, 0.1145153560328508}}}}
+'mlx_Typical' = {{{values={0.7044233533422061, 0.5613749330460012, -0.2760804241268232, 70.07217559901146, 1.161943618640849, 2.241912809739945, 0.016144393433234, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1145153560328508}}}}
+
+OUTPUT:
+'mlx_DV' = {output=DV, file={path='../ExternalFiles/mlx_DV.txt'}}
+'mlx_Cc' = {output=Cc, {{start=0, interval=0.119718875502008, final=29.81}}}
+'Grid_0_30_AUC' = {output=AUC, {{start=0, interval=1, final=30}}}
+'Grid_0_30_Concentration' = {output=Cc, {{start=0, interval=1, final=30}}}
+'Grid_0_6_AUC' = {output=AUC, {{start=0, interval=0.1, final=6}}}
+'Grid_0_6_Concentration' = {output=Cc, {{start=0, interval=0.1, final=6}}}
+
+INDIVIDUAL:
+parameters={F, ka, V, Cl}
+'mlx_PopIndiv' = {{{values={0.7044233533422061, 0.5613749330460012, 70.07217559901146, 2.241912809739945}}}}
+'mlx_PopIndivCov' = {file={path='../ExternalFiles/mlx_PopIndivCov.txt'}}
+'mlx_CondMean' = {file={path='../ExternalFiles/mlx_CondMean.txt'}}
+'mlx_EBEs' = {file={path='../ExternalFiles/mlx_EBEs.txt'}}
+'mlx_CondDistSample' = {file={path='../ExternalFiles/mlx_CondDistSample.txt'}}
+
+COVARIATE:
+continuousCovariates={WT}
+categoricalCovariates={SEX}
+'mlx_Cov' = {file={path='../ExternalFiles/mlx_Cov.txt'}}
+'mlx_CovDist' = {{distribution=logNormal, typical=65.73566745113686, sd=0.1430624428578481}, {categories={'0', '1'}, probabilities={0.453125, 0.546875}}}
+'Normal_Pat' = {{{values={70, '0'}}}}
+
+TREATMENT:
+'mlx_Adm1' = {file={path='../ExternalFiles/mlx_Adm1.txt'}, adm=1}
+'mlx_Adm2' = {file={path='../ExternalFiles/mlx_Adm2.txt'}, adm=2}
+'IV_Ref' = {{{start=0, interval=24, nbDoses=1, amount=150}}, adm=2}
+'Oral_210' = {{{start=0, interval=24, nbDoses=1, amount=210}}, adm=1}
+'Oral_150' = {{{start=0, interval=24, nbDoses=1, amount=150}}, adm=1}
+'Oral_250' = {{{start=0, interval=24, nbDoses=1, amount=250}}, adm=1}
+'Oral_300' = {{{start=0, interval=24, nbDoses=1, amount=300}}, adm=1}
+
+[SIMULATION]
+GROUPS:
+'Reference'={size=1000, parameter='mlx_Pop', remaining={a=1, b=1}, covariate='Normal_Pat', outputs={'Grid_0_6_AUC', 'Grid_0_6_Concentration', 'Grid_0_30_AUC', 'Grid_0_30_Concentration'}, treatment={'IV_Ref'}}
+'Oral_210_'={size=1000, parameter='mlx_Pop', remaining={a=1, b=1}, covariate='Normal_Pat', outputs={'Grid_0_6_AUC', 'Grid_0_6_Concentration', 'Grid_0_30_AUC', 'Grid_0_30_Concentration'}, treatment={'Oral_210'}}
+'Oral_150_'={size=1000, parameter='mlx_Pop', remaining={a=1, b=1}, covariate='Normal_Pat', outputs={'Grid_0_6_AUC', 'Grid_0_6_Concentration', 'Grid_0_30_AUC', 'Grid_0_30_Concentration'}, treatment={'Oral_150'}}
+'Oral_250_'={size=1000, parameter='mlx_Pop', remaining={a=1, b=1}, covariate='Normal_Pat', outputs={'Grid_0_6_AUC', 'Grid_0_6_Concentration', 'Grid_0_30_AUC', 'Grid_0_30_Concentration'}, treatment={'Oral_250'}}
+'Oral_300_'={size=1000, parameter='mlx_Pop', remaining={a=1, b=1}, covariate='Normal_Pat', outputs={'Grid_0_6_AUC', 'Grid_0_6_Concentration', 'Grid_0_30_AUC', 'Grid_0_30_Concentration'}, treatment={'Oral_300'}}
+
+[EXPLORATION]
+GROUPS:
+'explorationGroup1'={remaining={a=1, b=1}, parameter='mlx_PopIndiv', outputs={'mlx_Cc'}, treatment={'mlx_Adm1', 'mlx_Adm2'}}
+
+[TASKS]
+simulation()
+endpoint(run=false)
+
+[EXTENSION]
+ddt_AUC= Cc
+

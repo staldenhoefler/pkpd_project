@@ -1,6 +1,4 @@
 parameter,covariate,statistics,p-value,test
-F,beta_F_SEX_1,-3.28704,0.00168225,t-Test
-F,beta_F_WT,-8.24223,1.68641e-11,t-Test
-Tk0,beta_Tk0_WT,-6.49048,1.72668e-08,t-Test
-Tk0,beta_Tk0_logtWT,7.24993,8.61241e-10,t-Test
-V,beta_V_WT,6.9237,2.91378e-09,t-Test
+ka,beta_ka_SEX_1,-4.44491,3.70693e-05,t-Test
+V,beta_V_logtWT,10.2712,5.25307e-15,t-Test
+Cl,beta_Cl_WT,4.89923,7.23356e-06,t-Test

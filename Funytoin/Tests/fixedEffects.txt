@@ -1,0 +1,4 @@
+parameter,statistics(sa),p-value(sa)
+beta_ka_SEX_1,2.80574,0.00502
+beta_V_logtWT,7.53658,4.82e-14
+beta_Cl_WT,4.4715,7.77e-06
