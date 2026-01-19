@@ -84,7 +84,7 @@ continuousCovariates={WT}
 categoricalCovariates={SEX}
 'mlx_Cov' = {file={path='../ExternalFiles/mlx_Cov.txt'}}
 'mlx_CovDist' = {{distribution=logNormal, typical=65.73566745113686, sd=0.1430624428578481}, {categories={'0', '1'}, probabilities={0.453125, 0.546875}}}
-'Normal_Pat' = {{{values={70, '0'}}}}
+'Normal_Pat' = {{{values={70, '1'}}}}
 
 TREATMENT:
 'mlx_Adm1' = {file={path='../ExternalFiles/mlx_Adm1.txt'}, adm=1}
